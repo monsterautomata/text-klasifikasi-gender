@@ -15,9 +15,16 @@ y = df.iloc[:,1]
 from sklearn.feature_extraction.text import CountVectorizer
 vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(x)
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+
+dt = pd.read_csv("komentar kaskus gender test.csv")
+
+x_train = X
+y_train = y
+x_test = dt.iloc[:,0]
+y_test = dt.iloc[:,1]
+x_test = vectorizer.transform(x_test)
 clf = MultinomialNB()
-clf.fit(X_train,y_train)
-predict=clf.predict(X_test)
-clf.score(X_train,y_train)
+clf.fit(x_train,y_train)
+predict=clf.predict(x_test)
+scoremnnb=clf.score(x_train,y_train)
+

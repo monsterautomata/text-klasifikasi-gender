@@ -28,3 +28,8 @@ clf.fit(x_train,y_train)
 predict=clf.predict(x_test)
 scoremnnb=clf.score(x_train,y_train)
 
+from sklearn.svm import SVC
+clf2 = SVC(gamma='scale',decision_function_shape='ovo')
+clf2.fit(x_train,y_train) 
+predict2=clf2.predict(x_test)
+scoresvm=clf2.score(x_train,y_train)

@@ -1,35 +1,45 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 10 01:28:51 2019
-
-@author: Rozan
-"""
+def preprocessing(data): #fungsi preprocessing
+    stop_words = stopwords.words('Indonesian') #stopword bahasa indonesia
+    data["Komentar"] = data["Komentar"].str.lower() #casefolding
+    data['Komentar'] = data.Komentar.str.replace("[^\w\s]", "") #punctuation removal
+    data.Komentar = data.Komentar.replace('\d+', '', regex = True) #number removal
+    data['Komentar'] = data['Komentar'].apply(lambda x: ' '.join([item for item in x.split() if item not in stop_words]))#stopword removal
+    return data
 
 import pandas as pd 
+import numpy as np
 from sklearn.naive_bayes import MultinomialNB
-df = pd.read_csv("komentar kaskus gender.csv",encoding='latin1')
-
-x = df.iloc[:,0]
-y = df.iloc[:,1]
-
+from sklearn import metrics	
+from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
-vectorizer = CountVectorizer()
-X = vectorizer.fit_transform(x)
+from sklearn.ensemble import BaggingClassifier
 
-dt = pd.read_csv("komentar kaskus gender test.csv")
+df = pd.read_csv("komentar kaskus gender.csv",encoding='latin1')#baca data training
+df = preprocessing(df)#preprocessing data training
+x = df.iloc[:,0]#ambil berdasarkan kolom komentar
+y = df.iloc[:,1]#ambil berdasarkan kolom gender
 
-x_train = X
-y_train = y
-x_test = dt.iloc[:,0]
-y_test = dt.iloc[:,1]
-x_test = vectorizer.transform(x_test)
-clf = MultinomialNB()
-clf.fit(x_train,y_train)
-predict=clf.predict(x_test)
-scoremnnb=clf.score(x_train,y_train)
+vectorizer = CountVectorizer()#panggil fungsi countvector
+X = vectorizer.fit_transform(x)#fit countvector pada kolom komentar training
 
-from sklearn.svm import SVC
-clf2 = SVC(gamma='scale',decision_function_shape='ovo')
-clf2.fit(x_train,y_train) 
-predict2=clf2.predict(x_test)
-scoresvm=clf2.score(x_train,y_train)
+dt = pd.read_csv("komentar kaskus gender test.csv")#baca data testing
+dt = preprocessing(dt)# #preprocessing data testing
+
+x_train = X #alokasi variable xtraining (komentar training)
+y_train = y #alokasi variable ytraining (gender training)
+x_test = dt.iloc[:,0]#ambil berdasarkan kolom komentar
+y_test = dt.iloc[:,1]#ambil berdasarkan kolom gender
+x_test = vectorizer.transform(x_test)#fit countvector pada kolom komentar testing
+clf = MultinomialNB()#panggil fungsi Mutinomial naive bayes
+clf.fit(x_train,y_train)#fit fungsi MNNB pada x_train dan y_train
+predict=clf.predict(x_test) #prediksi dengan MNNB
+scoremnnb=clf.score(x_train,y_train) #skor dengan MNNB
+print("Akurasi Prediksi  MNNB:",metrics.accuracy_score(y_test, predict)*100,'%') #print hasil akurasi MNNB
+
+
+clf2 = BaggingClassifier(base_estimator=clf, n_estimators=100, random_state=10)#panggil fungsi bagging dengan MNNB sebagai base_estimator
+clf2.fit(x_train,y_train)#fit fungsi bagging pada x_train dan y_train
+predict2=clf2.predict(x_test)#prediksi MNNB dengan bagging
+bagging = np.array(predict2.tolist())#kolom gender hasil prediksi
+scorebagging=clf2.score(x_train,y_train)#skor MNNB dengan bagging
+print("Akurasi Prediksi  MNNB dengan Bagging:",metrics.accuracy_score(y_test, predict2)*100,'%')#print hasil akurasi MNNB dengan bagging

@@ -23,7 +23,7 @@ vectorizer = CountVectorizer()#panggil fungsi countvector
 X = vectorizer.fit_transform(x)#fit countvector pada kolom komentar training
 
 dt = pd.read_csv("komentar kaskus gender test.csv")#baca data testing
-dt = preprocessing(dt)# #preprocessing data testing
+#dt = preprocessing(dt)# #preprocessing data testing
 
 x_train = X #alokasi variable xtraining (komentar training)
 y_train = y #alokasi variable ytraining (gender training)

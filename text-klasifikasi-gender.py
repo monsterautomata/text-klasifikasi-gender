@@ -22,6 +22,7 @@ y = df.iloc[:,1]#ambil berdasarkan kolom gender
 vectorizer = CountVectorizer()#panggil fungsi countvector
 X = vectorizer.fit_transform(x)#fit countvector pada kolom komentar training
 
+
 dt = pd.read_csv("komentar kaskus gender test.csv")#baca data testing
 #dt = preprocessing(dt)# #preprocessing data testing
 
@@ -43,3 +44,4 @@ predict2=clf2.predict(x_test)#prediksi MNNB dengan bagging
 bagging = np.array(predict2.tolist())#kolom gender hasil prediksi
 scorebagging=clf2.score(x_train,y_train)#skor MNNB dengan bagging
 print("Akurasi Prediksi  MNNB dengan Bagging:",metrics.accuracy_score(y_test, predict2)*100,'%')#print hasil akurasi MNNB dengan bagging
+

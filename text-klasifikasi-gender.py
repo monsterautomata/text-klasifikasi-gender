@@ -22,6 +22,9 @@ y = df.iloc[:,1]#ambil berdasarkan kolom gender
 vectorizer = CountVectorizer()#panggil fungsi countvector
 X = vectorizer.fit_transform(x)#fit countvector pada kolom komentar training
 
+from sklearn.feature_selection import f_classif
+
+f,z=f_classif(X,y)
 
 dt = pd.read_csv("komentar kaskus gender test.csv")#baca data testing
 #dt = preprocessing(dt)# #preprocessing data testing
@@ -33,6 +36,7 @@ y_test = dt.iloc[:,1]#ambil berdasarkan kolom gender
 x_test = vectorizer.transform(x_test)#fit countvector pada kolom komentar testing
 clf = MultinomialNB()#panggil fungsi Mutinomial naive bayes
 clf.fit(x_train,y_train)#fit fungsi MNNB pada x_train dan y_train
+
 predict=clf.predict(x_test) #prediksi dengan MNNB
 scoremnnb=clf.score(x_train,y_train) #skor dengan MNNB
 print("Akurasi Prediksi  MNNB:",metrics.accuracy_score(y_test, predict)*100,'%') #print hasil akurasi MNNB
